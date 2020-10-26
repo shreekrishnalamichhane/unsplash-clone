@@ -25,7 +25,7 @@ mongoose
     console.log("Database connection failed.");
   });
 
-  // imageFetch();
+  imageFetch();
 const imageRoutes = require("./routes/imageRoutes");
 const { Variable, Keyword } = require("./utils/imports");
 const { addVariable, deleteVariable, updateVariable, getVariable, checkImage, addKeyword, checkKeyword, getKeyword, markKeyword, addUser, checkUser, getUser, deleteUser, markUser, deleteKeyword, incrementVariable, resetAllVariable, resetOneVariable, unMarkAllKeyword, markKeywordAsFetchDone } = require("./config/helper_functions");
