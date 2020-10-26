@@ -25,25 +25,17 @@ mongoose
     console.log("Database connection failed.");
   });
 
-
-
-
-// imageFetch();
-
-keywordFetch();
-
-
-
-
+  // imageFetch();
 const imageRoutes = require("./routes/imageRoutes");
 const { Variable, Keyword } = require("./utils/imports");
-const { addVariable, deleteVariable, updateVariable, getVariable, checkImage, addKeyword, checkKeyword, getKeyword, markKeyword, addUser, checkUser, getUser, deleteUser, markUser, deleteKeyword, incrementVariable, resetAllVariable, resetOneVariable, unMarkAllKeyword } = require("./config/helper_functions");
+const { addVariable, deleteVariable, updateVariable, getVariable, checkImage, addKeyword, checkKeyword, getKeyword, markKeyword, addUser, checkUser, getUser, deleteUser, markUser, deleteKeyword, incrementVariable, resetAllVariable, resetOneVariable, unMarkAllKeyword, markKeywordAsFetchDone } = require("./config/helper_functions");
 const e = require("express");
 app.use(imageRoutes);
-
-// addKeyword("food");
-// deleteKeyword("int");
-
+// resetOneVariable("current_page");
+// addVariable('current_page' , "0" , true);
+  // Keyword.find ({ used: "FALSE" }).then(keyword =>{
+  //   console.log(keyword.name);
+  // });
 
 
 /* Start The Server */

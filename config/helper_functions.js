@@ -340,7 +340,8 @@ async function checkKeyword(keyword) {
 
 //get a keyword whose {used == false}
 async function getKeyword() {
-  return await Keyword.findOne({ used: false }).limit(1);
+  return await Keyword.findOne({ used: "FALSE" }).limit(1);
+
 }
 
 //mark a user as used or simply {used = true}
@@ -474,6 +475,7 @@ function incrementVariable(variablename) {
   const name = variablename.toLowerCase();
 
   Variable.find({ name }).limit(1).then(variable => {
+    // console.log(variable);
     newValue = parseInt(variable[0].value) + 1;
     Variable.updateOne({ name }, {
       $set: {

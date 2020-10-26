@@ -6,28 +6,18 @@ const KeywordSchema = new Schema({
         type: String,
         required: true
     },
-    repeat:{
-        type:Number,
-        default:0,
-        required:true
-    },
     used:{
-        type:Boolean,
+        type:String,
         default:false,
         required: true
     },
-    used_for_keyword:{
-        type:Boolean,
-        default:false,
-        required: true,
-    },
     created_at:{
-        type:Date,
+        type:String,
         required:true,
         default:Date.now,
     },
     updated_at:{
-        type:Date,
+        type:String,
         required:true,
         default:Date.now,
     }   

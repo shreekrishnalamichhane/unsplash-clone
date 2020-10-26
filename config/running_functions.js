@@ -13,14 +13,14 @@ const {
 
 //for 50req/hr = 72000 ms,
 //for 5000req/hr = 5000 ms => 1 req/5 sec
-var fetch_delay = 72000,
-//for 50req/hr = 1000 ms
-//for 5000req/hr = 75ms
-  decode_delay = 1000;
+var fetch_delay = 20000,
+  //for 50req/hr = 1000 ms
+  //for 5000req/hr = 75ms
+  decode_delay = 500;
 
 //importing the custom functions
 const {
-  addImage,checkImage,addUser,checkUser,getUser,markUser,deleteUser,addKeyword,checkKeyword,getKeyword,markKeyword,markKeywordAsFetchDone ,unMarkAllKeyword ,deleteKeyword,addVariable,checkVariable,updateVariable,getVariable,getAllVariable,deleteVariable,incrementVariable,resetOneVariable,resetAllVariable
+  addImage, checkImage, addUser, checkUser, getUser, markUser, deleteUser, addKeyword, checkKeyword, getKeyword, markKeyword, markKeywordAsFetchDone, unMarkAllKeyword, deleteKeyword, addVariable, checkVariable, updateVariable, getVariable, getAllVariable, deleteVariable, incrementVariable, resetOneVariable, resetAllVariable
 } = require("./helper_functions");
 
 function startImageFetch(current_keyword, total_count, total_pages, current_page) {
@@ -44,11 +44,12 @@ function startImageFetch(current_keyword, total_count, total_pages, current_page
       //Reset {current_keyword} to null.
       updateVariable("current_keyword", "null");
       //Reset {current_total_count} , {current_total_pages} & {current_page} to 0
-      resetOneVariable("current_total_variable");
-      resetOneVariable("current_total_pages");
       resetOneVariable("current_page");
+      resetOneVariable("current_total_count");
+      resetOneVariable("current_total_pages");
       //Stop the process.
       clearInterval(request_interval_30);
+      imageFetch();
     }
     updateVariable("current_page", fetch_loop);
     console.log("fetch_loop: ", fetch_loop);
@@ -150,6 +151,7 @@ function imageFetch() {
           let current_page;
           if (variable.length > 0) {
             //variable present
+            // console.log(variable);
             for (let index = 0; index < variable.length; index++) {
               if (variable[index].name == "current_keyword") {
                 current_keyword = variable[index].value;
@@ -185,14 +187,17 @@ function imageFetch() {
         //take a new keyword from the database.
         getKeyword().then(newKeyword => {
           //=================Declaring Variables==================
+          // console.log(newKeyword);
           let current_keyword = newKeyword.name;
-          updateVariable("is_running" , true);
+          updateVariable("is_running", true);
           fetchTotalData(current_keyword);
         });
       }
     }
     else {
       //Variable is not present and need to create one
+      console.log("Creating a {is_running} variable.");
+      addVariable("is_running", false, false);
     }
   }).catch(err => {
     console.log(err);
@@ -201,24 +206,24 @@ function imageFetch() {
 
 
 
-function keywordFetch(){
-  setInterval(()=>{
-    Keyword.find({used_for_keyword: false}).limit(1).then(newKeyword=>{
+function keywordFetch() {
+  setInterval(() => {
+    Keyword.find({ used_for_keyword: false }).limit(1).then(newKeyword => {
       console.log(newKeyword[0].name);
-      fetch(`https://api.datamuse.com/words?rel_trg=${newKeyword[0].name}`).then(response => response.json()).then(data=>{
+      fetch(`https://api.datamuse.com/words?rel_trg=${newKeyword[0].name}`).then(response => response.json()).then(data => {
         for (let index = 0; index < data.length; index++) {
           addKeyword(data[index].word);
         }
         markKeywordAsFetchDone(newKeyword[0].name);
       })
       // markKeywordAsFetchDone(newKeyword[0].name);
-    }).catch(err=>{
+    }).catch(err => {
       console.log(err);
     })
-  },1500);
+  }, 3000);
 }
 module.exports = {
-  imageFetch,keywordFetch
+  imageFetch, keywordFetch
 };
 
 
@@ -298,12 +303,46 @@ function checkStatisticsVariables() {
 }
 
 async function fetchTotalData(keyword) {
-  console.log(keyword);
+  // console.log(keyword);
   unsplash_image.search.photos(keyword, 1, 30, { orderBy: "latest" }).then(toJson).then(response => {
-    updateVariable("current_keyword", keyword);
-    updateVariable("current_total_count", response.total);
-    updateVariable("current_total_pages", response.total_pages);
-    updateVariable("current_page", 1);
-    startImageFetch(keyword, response.total, response.total_pages, 1);
+    let total_pages;
+
+    if (response.total_pages == 0) {
+      //update the {is_running} variable to false.
+      // console.log("falseeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
+      updateVariable("is_running", "false");
+      //increment the {complete_sessions} by 1.
+      incrementVariable("complete_sessions");
+      //Mark the current keyword as done.
+      markKeyword(keyword);
+      //Reset {current_keyword} to null.
+      updateVariable("current_keyword", "null");
+      //Reset {current_total_count} , {current_total_pages} & {current_page} to 0
+      resetOneVariable("current_page");
+      resetOneVariable("current_total_count");
+      resetOneVariable("current_total_pages");
+      //Stop the process.
+      console.log(keyword , " has been skipped");
+      imageFetch();
+    }
+    else if (response.total_pages <= 5) {
+      total_pages = response.total_pages;
+      updateVariable("current_keyword", keyword);
+      updateVariable("current_total_count", response.total);
+      updateVariable("current_total_pages", total_pages);
+      updateVariable("current_page", 1);
+      console.log(response.total, response.total_pages);
+      startImageFetch(keyword, response.total, total_pages, 1);
+    }
+    else {
+      total_pages = 5;
+      updateVariable("current_keyword", keyword);
+      updateVariable("current_total_count", response.total);
+      updateVariable("current_total_pages", total_pages);
+      updateVariable("current_page", 1);
+      console.log(response.total, response.total_pages);
+      startImageFetch(keyword, response.total, total_pages, 1);
+    }
+
   })
 }

@@ -6,8 +6,8 @@ module.exports = {
 
     index: async (req, res) => {
         // async function toonify() {
-        //     var result = await deepai.callStandardApi("content-moderation", {
-        //       image: ""
+        //     var result = await deepai.callStandardApi("densecap", {
+        //       image: "https://images.unsplash.com/photo-1603614989939-43d9c327c2eb"
         //       }).then(data=>{
         //         console.log(data);
         //         res.json(data);
@@ -17,7 +17,7 @@ module.exports = {
         //     // console.log(result);
         //   };
           
-          // toonify();
+        //   toonify();
         // Image.findOne({color:"#FDD14F"}).then(
         //     image =>{
         //         res.json(image);
@@ -33,8 +33,9 @@ module.exports = {
         //     .photos("computer", 1, 30 , {orderBy: "latest"}).then(toJson).then(json=>{
         //       res.json(json);
         //     })
-        Keyword.find({name : "dynamically"}).limit(10).then(json=>{
+        Keyword.find({name : "krewe"}).limit(10).then(json=>{
           res.json(json);
         
-        })}
+        })
+      }
 };
