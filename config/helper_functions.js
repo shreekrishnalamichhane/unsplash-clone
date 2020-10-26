@@ -374,7 +374,7 @@ function markKeywordAsFetchDone(keyword){
       updated_at: Date.now()
     }
   }).then(mark=>{
-    console.log(mark);
+    // console.log(mark);
   })
   .catch(err=>{
     console.log(err);
