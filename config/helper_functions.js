@@ -351,6 +351,7 @@ function markKeyword(keyword) {
     {
       $set: {
         used: true,
+        updated_at: Date.now()
       },
     }
   )
@@ -366,13 +367,14 @@ function markKeyword(keyword) {
 //mark keyword as {used_for_keyword = true}
 
 function markKeywordAsFetchDone(keyword){
-  let name = keyword;
+  let name = keyword.toLowerCase();
   Keyword.updateOne({name},{
     $set:{
-      used_for_keyword: true,
+      used_for_keyword: "true",
+      updated_at: Date.now()
     }
   }).then(mark=>{
-
+    console.log(mark);
   })
   .catch(err=>{
     console.log(err);

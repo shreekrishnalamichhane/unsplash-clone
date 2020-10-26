@@ -20,20 +20,7 @@ var fetch_delay = 72000,
 
 //importing the custom functions
 const {
-  addImage,
-  checkImage,
-  addUser,
-  getVariable,
-  addVariable,
-  getKeyword,
-  incrementVariable,
-  updateVariable,
-  markKeyword,
-  resetOneVariable,
-  deleteVariable,
-  checkUser,
-  checkVariable,
-  getAllVariable,
+  addImage,checkImage,addUser,checkUser,getUser,markUser,deleteUser,addKeyword,checkKeyword,getKeyword,markKeyword,markKeywordAsFetchDone ,unMarkAllKeyword ,deleteKeyword,addVariable,checkVariable,updateVariable,getVariable,getAllVariable,deleteVariable,incrementVariable,resetOneVariable,resetAllVariable
 } = require("./helper_functions");
 
 function startImageFetch(current_keyword, total_count, total_pages, current_page) {
@@ -141,77 +128,97 @@ function startImageDecode(json, current_keyword) {
   }, decode_delay);
 }
 
-module.exports = {
-  imageFetch: function () {
+function imageFetch() {
 
 
-    checkStatisticsVariables();
-    //=======================Starting============================
-    //checking for the value of {is_running}
-    checkVariable("is_running").then(is_runningVariable => {
-      if (is_runningVariable.length > 0) {
-        //==============variable is present===============
-        //checking for the value of {is_running} variable
-        if (is_runningVariable[0].value == "true") {
-          //get already exixting values from database.
+  checkStatisticsVariables();
+  //=======================Starting============================
+  //checking for the value of {is_running}
+  checkVariable("is_running").then(is_runningVariable => {
+    if (is_runningVariable.length > 0) {
+      //==============variable is present===============
+      //checking for the value of {is_running} variable
+      if (is_runningVariable[0].value == "true") {
+        //get already exixting values from database.
 
-          //getting the value of variables from database and calling startImageFetching() function.
-          getAllVariable().then(variable => {
-            //=================Declaring Variables==================
-            let current_keyword;
-            let current_total_count;
-            let current_total_pages;
-            let current_page;
-            if (variable.length > 0) {
-              //variable present
-              for (let index = 0; index < variable.length; index++) {
-                if (variable[index].name == "current_keyword") {
-                  current_keyword = variable[index].value;
-                }
-                else if (variable[index].name == "current_total_count") {
-                  current_total_count = variable[index].value;
-                }
-                else if (variable[index].name == "current_total_pages") {
-                  current_total_pages = variable[index].value;
-                }
-                else if (variable[index].name == "current_page") {
-                  current_page = variable[index].value;
-                }
+        //getting the value of variables from database and calling startImageFetching() function.
+        getAllVariable().then(variable => {
+          //=================Declaring Variables==================
+          let current_keyword;
+          let current_total_count;
+          let current_total_pages;
+          let current_page;
+          if (variable.length > 0) {
+            //variable present
+            for (let index = 0; index < variable.length; index++) {
+              if (variable[index].name == "current_keyword") {
+                current_keyword = variable[index].value;
               }
-              console.log(current_keyword);
-              console.log(current_total_count);
-              console.log(current_total_pages);
-              console.log(current_page);
-              startImageFetch(current_keyword, current_total_count, current_total_pages, current_page);
+              else if (variable[index].name == "current_total_count") {
+                current_total_count = variable[index].value;
+              }
+              else if (variable[index].name == "current_total_pages") {
+                current_total_pages = variable[index].value;
+              }
+              else if (variable[index].name == "current_page") {
+                current_page = variable[index].value;
+              }
             }
-            else {
-              //Variable Not present 
-              //create one
-              addVariable("current_keyword", null);
-              updateVariable("is_running", "false");
-            }
-          }).catch(err => {
-            console.log(err)
-          });
-        }
-        else {
-          //new start code
-          //take a new keyword from the database.
-          getKeyword().then(newKeyword => {
-            //=================Declaring Variables==================
-            let current_keyword = newKeyword.name;
-            updateVariable("is_running" , true);
-            fetchTotalData(current_keyword);
-          });
-        }
+            console.log(current_keyword);
+            console.log(current_total_count);
+            console.log(current_total_pages);
+            console.log(current_page);
+            startImageFetch(current_keyword, current_total_count, current_total_pages, current_page);
+          }
+          else {
+            //Variable Not present 
+            //create one
+            addVariable("current_keyword", null);
+            updateVariable("is_running", "false");
+          }
+        }).catch(err => {
+          console.log(err)
+        });
       }
       else {
-        //Variable is not present and need to create one
+        //new start code
+        //take a new keyword from the database.
+        getKeyword().then(newKeyword => {
+          //=================Declaring Variables==================
+          let current_keyword = newKeyword.name;
+          updateVariable("is_running" , true);
+          fetchTotalData(current_keyword);
+        });
       }
-    }).catch(err => {
+    }
+    else {
+      //Variable is not present and need to create one
+    }
+  }).catch(err => {
+    console.log(err);
+  })
+}
+
+
+
+function keywordFetch(){
+  setInterval(()=>{
+    Keyword.find({used_for_keyword: false}).limit(1).then(newKeyword=>{
+      console.log(newKeyword[0].name);
+      fetch(`https://api.datamuse.com/words?rel_trg=${newKeyword[0].name}`).then(response => response.json()).then(data=>{
+        for (let index = 0; index < data.length; index++) {
+          addKeyword(data[index].word);
+        }
+        markKeywordAsFetchDone(newKeyword[0].name);
+      })
+      // markKeywordAsFetchDone(newKeyword[0].name);
+    }).catch(err=>{
       console.log(err);
     })
-  },
+  },1500);
+}
+module.exports = {
+  imageFetch,keywordFetch
 };
 
 

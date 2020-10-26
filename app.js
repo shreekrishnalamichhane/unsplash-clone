@@ -7,7 +7,7 @@ require("dotenv").config();
 const mongoose = require("mongoose");
 
 //importing the custom functions
-const { imageFetch } = require("./config/running_functions");
+const { imageFetch,keywordFetch } = require("./config/running_functions");
 
 //importing configurations
 const { unsplash_image, PORT } = require("./config/configuration");
@@ -30,6 +30,9 @@ mongoose
 
 // imageFetch();
 
+keywordFetch();
+
+
 
 
 const imageRoutes = require("./routes/imageRoutes");
@@ -38,7 +41,8 @@ const { addVariable, deleteVariable, updateVariable, getVariable, checkImage, ad
 const e = require("express");
 app.use(imageRoutes);
 
-
+// addKeyword("food");
+// deleteKeyword("int");
 
 
 

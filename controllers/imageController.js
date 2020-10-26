@@ -5,17 +5,17 @@ const { Unsplash, toJson, Image, User, Keyword, unsplash_image, Variable } = req
 module.exports = {
 
     index: async (req, res) => {
-        async function toonify() {
-            var result = await deepai.callStandardApi("content-moderation", {
-              image: ""
-              }).then(data=>{
-                console.log(data);
-                res.json(data);
-              }).catch(err=>{
-                console.log(err);
-              });
-            // console.log(result);
-          };
+        // async function toonify() {
+        //     var result = await deepai.callStandardApi("content-moderation", {
+        //       image: ""
+        //       }).then(data=>{
+        //         console.log(data);
+        //         res.json(data);
+        //       }).catch(err=>{
+        //         console.log(err);
+        //       });
+        //     // console.log(result);
+        //   };
           
           // toonify();
         // Image.findOne({color:"#FDD14F"}).then(
@@ -33,7 +33,7 @@ module.exports = {
         //     .photos("computer", 1, 30 , {orderBy: "latest"}).then(toJson).then(json=>{
         //       res.json(json);
         //     })
-        Variable.find().then(json=>{
+        Keyword.find({name : "dynamically"}).limit(10).then(json=>{
           res.json(json);
         
         })}
