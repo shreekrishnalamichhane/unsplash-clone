@@ -13,7 +13,7 @@ const {
 
 //for 50req/hr = 72000 ms,
 //for 5000req/hr = 5000 ms => 1 req/5 sec
-var fetch_delay = 75000,
+var fetch_delay = 80000,
   //for 50req/hr = 1000 ms
   //for 5000req/hr = 75ms
   decode_delay = 1000;
