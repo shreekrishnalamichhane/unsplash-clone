@@ -33,9 +33,22 @@ module.exports = {
         //     .photos("computer", 1, 30 , {orderBy: "latest"}).then(toJson).then(json=>{
         //       res.json(json);
         //     })
-        Keyword.find({name : "krewe"}).limit(10).then(json=>{
+        res.send("Welcome");
+      },
+      keywords: async (req,res)=>{
+        Keyword.find({"used": "FALSE"}).countDocuments().then(json=>{
           res.json(json);
-        
+        })
+      },
+      images: async (req,res)=>{
+        Image.find().countDocuments().then(json=>{
+          res.json(json);
+        })
+      },
+      users: async (req,res)=>{
+        User.find().countDocuments().then(json=>{
+          res.json(json);
         })
       }
+
 };

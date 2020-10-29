@@ -15,6 +15,12 @@ router.all('/*', (req, res, next) => {
 
 router.route('/')
     .get(imageController.index);
+router.route('/keywords')
+    .get(imageController.keywords);
+router.route('/images')
+    .get(imageController.images);
+router.route('/users')
+    .get(imageController.users);
     
 
 module.exports = router;
